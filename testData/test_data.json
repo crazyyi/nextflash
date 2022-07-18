@@ -1,0 +1,13 @@
+[
+    {
+        "front": "abc",
+        "back": "dceewow",
+        "folder": "default",
+        "visited": 2,
+        "mastered": false,
+        "user": "default",
+        "createdOn": "2022-07-12T21:26:17Z",
+        "lastVisited": "2022-07-12T23:26:17Z",
+        "flag": ["Japanese"]
+    }
+]
