@@ -17,7 +17,9 @@ export const DataProvider = (props) => {
   });
 
   const getCards = async () => {
-    const res = await fetch("http://localhost:3000/api/getCards", {
+    const URI = process.env.NEXT_PUBLIC_HOST_URL + "/api/getCards"
+    console.log('URI = ', URI)
+    const res = await fetch(URI, {
       headers: {
         Accept: "application/json, text/plain, */*",
         "User-Agent": "*",

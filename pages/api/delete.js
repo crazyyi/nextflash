@@ -1,5 +1,4 @@
 import connectToDatabase from "../../middleware/connectToDatabase";
-import { ObjectId } from 'mongodb'
 
 async function handler(req, res) {
   let db = await connectToDatabase();

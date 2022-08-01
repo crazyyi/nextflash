@@ -18,12 +18,12 @@ async function handler(req, res) {
   form.parse(req, (err, fields, files) => {
     console.log(err, fields, files);
     const query = { uuid };
-    db
-    .collection("flash_card_data")
-    .updateOne(query, { $set: fields }).then((doc) => {
-        console.log(doc)
-        res.json(doc)
-    })
+    db.collection("flash_card_data")
+      .updateOne(query, { $set: fields })
+      .then((doc) => {
+        console.log(doc);
+        res.json(doc);
+      });
   });
 }
 

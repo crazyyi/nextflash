@@ -4,7 +4,6 @@ import { MdRemoveCircle } from "react-icons/md";
 import { MessageDialog } from "components/Utilities";
 import { EditCardPanel } from "components";
 import { useDataContext } from "DataProvider";
-import fetch from "isomorphic-unfetch";
 
 const buttonStyle =
   "bg-indigo-400 hover:bg-violet-600 focus:outline-4 w-36 h-12 text-white px-8 font-bold tracking-widest text-lg m-8";
@@ -62,7 +61,7 @@ export const BrowsePanel = memo((props) => {
   const deleteHandler = async (entered) => {
     try {
       const res = await fetch(
-        `http://localhost:3000/api/delete/?uuid=${encodeURIComponent(entered)}`,
+        `${process.env.NEXT_PUBLIC_HOST_URL}/api/delete/?uuid=${encodeURIComponent(entered)}`,
         {
           method: "DELETE",
           body: "",
@@ -82,7 +81,7 @@ export const BrowsePanel = memo((props) => {
     try {
       const { uuid, form } = entered;
       const res = await fetch(
-        `http://localhost:3000/api/updateCard/?uuid=${encodeURIComponent(
+        `${process.env.NEXT_PUBLIC_HOST_URL}/api/updateCard/?uuid=${encodeURIComponent(
           uuid
         )}`,
         {
