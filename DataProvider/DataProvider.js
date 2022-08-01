@@ -24,7 +24,6 @@ export const DataProvider = (props) => {
       },
     });
     const json = await res.json();
-    console.log(json);
     if (json) {
       setGlobalData({
         status: "LOADED",

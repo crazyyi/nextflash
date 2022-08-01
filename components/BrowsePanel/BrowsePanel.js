@@ -132,13 +132,13 @@ export const BrowsePanel = memo((props) => {
 
   const cancelClicked = useCallback(() => {
     setIsOpen(false);
-  }, [isOpen]);
+  }, []);
 
   const confirmDeleted = useCallback(() => {
     deleteCard(confirmedId);
     setIsOpen(false);
     setIdsToDelete((prevState) => [...prevState, confirmedId]);
-  }, [isOpen]);
+  }, [confirmedId, deleteCard]);
 
   const onToggle = () => {
     let activeTable = document.querySelector(".slider");
@@ -256,3 +256,5 @@ export const BrowsePanel = memo((props) => {
     </div>
   );
 });
+
+BrowsePanel.displayName = "BrowsePanel"

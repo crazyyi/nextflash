@@ -35,9 +35,9 @@ export const CreateNewFolder = (props) => {
         </div>
       </div>
       <div className="grid grid-cols-5 gap-3 mt-4 items-center justify-center">
-        {folders.map((folder) => {
+        {folders.map((folder, index) => {
           return (
-            <div className="w-[100px] h-[100px] flex flex-col items-center justify-center">
+            <div className="w-[100px] h-[100px] flex flex-col items-center justify-center" key={index}>
               <GrFolder className="w-full h-full hover:animate-pulse hover:shadow-2xl hover:border-2 hover:border-slate-700 p-2 text-cyan-800 cursor-pointer text-5xl" />
               {folder}
             </div>

@@ -5,7 +5,6 @@ const buttonStyle =
   "bg-indigo-400 hover:bg-violet-600 focus:outline-4 w-32 h-10 text-white px-4 font-bold tracking-widest text-sm m-8";
 
 export const MessageDialog = memo((props) => {
-  console.log('message dialog')
   const { isOpen, closeAndContinue, closeAndGoBack, type, data } = props;
 
   let title = "Message"
@@ -76,3 +75,5 @@ export const MessageDialog = memo((props) => {
     </Dialog>
   );
 });
+
+MessageDialog.displayName = "MessageDialog"

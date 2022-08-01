@@ -54,7 +54,7 @@ export const EditCardPanel = memo((props) => {
     (e) => {
       setFrontText(e.target.value);
     },
-    [frontText]
+    []
   );
 
   const handleBackChange = (e) => {
@@ -217,3 +217,5 @@ export const EditCardPanel = memo((props) => {
     </>
   );
 });
+
+EditCardPanel.displayName = "EditCardPanel"
