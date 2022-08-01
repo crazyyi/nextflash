@@ -18,7 +18,6 @@ export const DataProvider = (props) => {
 
   const getCards = async () => {
     const URI = process.env.NEXT_PUBLIC_HOST_URL + "/api/getCards"
-    console.log('URI = ', URI)
     const res = await fetch(URI, {
       headers: {
         Accept: "application/json, text/plain, */*",

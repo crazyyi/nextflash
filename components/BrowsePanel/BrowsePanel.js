@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, memo } from "react";
 import { RiEditLine } from "react-icons/ri";
 import { MdRemoveCircle } from "react-icons/md";
-import { MessageDialog } from "components/Utilities";
+import { MessageDialog, Spinner } from "components/Utilities";
 import { EditCardPanel } from "components";
 import { useDataContext } from "DataProvider";
 
@@ -194,7 +194,7 @@ export const BrowsePanel = memo((props) => {
         />
       )}
       <div className="w-full transition-all ease-in-out duration-1000 transform translate-x-14 slider">
-        {data &&
+        {data ?
           data.map((element, index) => {
             return (
               <div
@@ -242,7 +242,7 @@ export const BrowsePanel = memo((props) => {
                 </div>
               </div>
             );
-          })}
+          }) : <Spinner />}
       </div>
       {isEditDialogOpen && (
         <EditCardPanel
