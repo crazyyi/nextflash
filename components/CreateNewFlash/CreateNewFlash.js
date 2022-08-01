@@ -2,9 +2,11 @@ import { MessageDialog } from "components/Utilities";
 import { Listbox, Transition } from "@headlessui/react";
 import { GoCheck } from "react-icons/go";
 import { HiSelector } from "react-icons/hi";
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { folders } from "components/Utilities";
+import { useDataContext } from "DataProvider";
+import { v4 as uuidv4 } from "uuid";
 
 const buttonStyle =
   "bg-indigo-400 hover:bg-violet-600 focus:outline-4 w-36 h-12 text-white px-8 font-bold tracking-widest text-lg m-8";
@@ -12,7 +14,7 @@ const buttonStyle =
 const backButtonStyle =
   "bg-indigo-400 hover:bg-violet-600 focus:outline-4 w-36 h-12 text-white px-8 font-bold tracking-widest text-lg m-8";
 
-export async function clickHandler(entered) {
+export async function addCardHandler(entered) {
   // Call an external API endpoint to get posts.
   // You can use any data fetching library
   const res = await fetch("http://localhost:3000/api/addNewCard", {
@@ -30,7 +32,13 @@ export const CreateNewFlash = (props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState(folders[0]);
 
-  const { register, control, handleSubmit, reset } = useForm();
+  const { globalData, addNewCard } = useDataContext();
+
+  const { register, control, handleSubmit, reset, getValues } = useForm();
+
+  const isCardCreated = useRef(false);
+
+  const card = useRef(null)
 
   const closeAndContinue = () => {
     setIsOpen(false);
@@ -46,10 +54,31 @@ export const CreateNewFlash = (props) => {
     onClick();
   };
 
-  async function handleAndClose(entered) {
-    await clickHandler(entered);
+  function handleAndClose(entered) {
+    isCardCreated.current = true;
+    const currentDate = new Date();
+    const newCard= Object.assign(entered, {
+      uuid: uuidv4(),
+      createdOn: currentDate,
+      lastVisited: currentDate,
+    });
+    card.current = newCard
+    addNewCard(newCard);
     setIsOpen(true);
   }
+
+  useEffect(() => {
+    return () => {
+      if (isCardCreated.current) {
+        (async () => {
+          await addCardHandler(card.current)
+        })().then(() => {
+          card.current = null
+          isCardCreated.current = false;
+        });
+      }
+    };
+  }, [globalData.cards]);
 
   return (
     <div className="w-full flex flex-col">
@@ -77,7 +106,7 @@ export const CreateNewFlash = (props) => {
                 <div className="w-48 mt-3">
                   <Controller
                     control={control}
-                    defaultValue=""
+                    defaultValue={folders[0]}
                     name="folder"
                     render={({ field }) => (
                       <Listbox

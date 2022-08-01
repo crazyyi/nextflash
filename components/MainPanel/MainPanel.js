@@ -1,7 +1,7 @@
 import { Tab } from "@headlessui/react";
 import MenuItems from "models/MenuItems";
 import { useState } from "react";
-import { CreateNewFolder, CreateNewFlash, BrowsePanel } from "../";
+import { CreateNewFolder, CreateNewFlash, BrowsePanel, StudyBoard } from "../";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -20,10 +20,14 @@ const buttonStyle =
 const Menus = [
   new MenuItems({
     id: "001",
-    displayTexts: "Browse",
+    displayTexts: "Study",
   }),
   new MenuItems({
     id: "010",
+    displayTexts: "Browse",
+  }),
+  new MenuItems({
+    id: "011",
     displayTexts: "Create New Flashcard",
   }),
   new MenuItems({
@@ -59,7 +63,7 @@ export const MainPanel = () => {
             )}
           >
             {show && (
-              <div className="flex justify-center items-center mt-24 flex-col">
+              <div className="flex justify-center items-center mt-16 flex-col">
                 {Menus.map((element) => (
                   <button
                     id={element.id}
@@ -72,8 +76,9 @@ export const MainPanel = () => {
                 ))}
               </div>
             )}
-            {menuSelected === "001" && <BrowsePanel onClick={goToDataPanel}/>}
-            {menuSelected === "010" && (
+            {menuSelected === "001" && <StudyBoard onClick={goToDataPanel}/>}
+            {menuSelected === "010" && <BrowsePanel onClick={goToDataPanel}/>}
+            {menuSelected === "011" && (
               <CreateNewFlash onClick={goToDataPanel} />
             )}
             {menuSelected === "100" && (

@@ -62,15 +62,13 @@ export const EditCardPanel = memo((props) => {
   };
 
   const handleSaveAndClose = (e) => {
-    const formData = new FormData();
-    formData.append("front", frontText);
-    formData.append("back", backText);
-    formData.append("folder", selected)
-    formData.append(
-      "tags",
-      tags.map((v) => v.name)
-    );
-    saveAndCloseEdit({ id: data._id, form: formData });
+    saveAndCloseEdit({ 
+      uuid: data.uuid,
+      front: frontText,
+      back: backText,
+      folder: selected,
+      tags: tags.map(v => v.name)
+    });
   };
 
   return (

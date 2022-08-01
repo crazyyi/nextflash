@@ -2,7 +2,8 @@ import { useEffect, useState, useCallback, memo } from "react";
 import { RiEditLine } from "react-icons/ri";
 import { MdRemoveCircle } from "react-icons/md";
 import { MessageDialog } from "components/Utilities";
-import { EditCardPanel } from "components"
+import { EditCardPanel } from "components";
+import { useDataContext } from "DataProvider";
 import fetch from "isomorphic-unfetch";
 
 const buttonStyle =
@@ -39,31 +40,29 @@ export const BrowsePanel = memo((props) => {
   const { onClick } = props;
   const [isEditMode, setIsEditMode] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [data, setData] = useState([]);
-  const [confirmedId, setConfirmId] = useState(null)
-  const [messageData, setMessageData] = useState()
+  const [confirmedId, setConfirmId] = useState(null);
+  const [messageData, setMessageData] = useState();
+  const [idsToDelete, setIdsToDelete] = useState([]);
 
-  const getCards = async () => {
-    try {
-      const res = await fetch("http://localhost:3000/api/getCards", {
-        headers: {
-          Accept: "application/json, text/plain, */*",
-          "User-Agent": "*",
-        },
-      });
-      const json = await res.json();
+  const { globalData, deleteCard, editCard } = useDataContext();
 
-      setData(json);
-    } catch (error) {
-      console.error(error.message);
-    }
-  };
+  useEffect(() => {
+    setData(globalData.cards);
+    return () => {
+      return Promise.all(
+        idsToDelete.map(async (uuid) => {
+          await deleteHandler(uuid);
+        })
+      ).then(() => console.log("done"));
+    };
+  }, [globalData.cards, idsToDelete]);
 
   const deleteHandler = async (entered) => {
     try {
       const res = await fetch(
-        `http://localhost:3000/api/delete/?id=${encodeURIComponent(entered)}`,
+        `http://localhost:3000/api/delete/?uuid=${encodeURIComponent(entered)}`,
         {
           method: "DELETE",
           body: "",
@@ -81,58 +80,65 @@ export const BrowsePanel = memo((props) => {
 
   const updateHandler = async (entered) => {
     try {
-      const {id, form } = entered
+      const { uuid, form } = entered;
       const res = await fetch(
-        `http://localhost:3000/api/updateCard/?id=${encodeURIComponent(id)}`,
+        `http://localhost:3000/api/updateCard/?uuid=${encodeURIComponent(
+          uuid
+        )}`,
         {
           method: "PATCH",
-          body: form
+          body: form,
         }
       );
       const data = await res.json();
     } catch (error) {
       console.error(error.message);
     }
-  }
-
-  useEffect(() => {
-    getCards();
-    const interval = setInterval(() => {
-      getCards();
-    }, 10000);
-
-    return () => clearInterval(interval);
-  }, []);
+  };
 
   const onEditClick = (obj) => {
-    setMessageData(obj.data)
-    setIsEditDialogOpen(true)
+    setMessageData(obj.data);
+    setIsEditDialogOpen(true);
   };
 
   const closeEdit = () => {
-    setIsEditDialogOpen(false)
-  }
+    setIsEditDialogOpen(false);
+  };
 
   const saveAndCloseEdit = async (obj) => {
-    setIsEditDialogOpen(false)
-    updateHandler(obj)
-  }
+    setIsEditDialogOpen(false);
+    editCard({
+      uuid: obj.uuid,
+      front: obj.front,
+      back: obj.back,
+      folder: obj.folder,
+      tags: obj.tags.join(",")
+    });
+
+    const formData = new FormData();
+    formData.append("front", obj.front);
+    formData.append("back", obj.back);
+    formData.append("folder", obj.folder);
+    formData.append("tags", obj.tags);
+    updateHandler({ uuid: obj.uuid, form: formData });
+  };
 
   const onDeleteClick = (obj) => {
-    const {id, data} = obj
-    setConfirmId(id)
-    setMessageData(data)
-    setIsOpen(true)
+    const { id, data } = obj;
+    setConfirmId(id);
+    setMessageData(data);
+    setIsOpen(true);
   };
 
   const cancelClicked = useCallback(() => {
-    setIsOpen(false)
-  }, [isOpen])
+    setIsOpen(false);
+  }, [isOpen]);
 
   const confirmDeleted = useCallback(() => {
-    deleteHandler(confirmedId);
-    setIsOpen(false)
-  }, [isOpen])
+    deleteCard(confirmedId);
+    setIsOpen(false);
+    setIdsToDelete((prevState) => [...prevState, confirmedId]);
+  }, [isOpen]);
 
   const onToggle = () => {
     let activeTable = document.querySelector(".slider");
@@ -179,51 +185,74 @@ export const BrowsePanel = memo((props) => {
         <div className="p-2 col-span-1">Visited</div>
         <div className="p-2 col-span-1">Last visited</div>
       </div>
-      {isOpen && <MessageDialog isOpen={isOpen} closeAndContinue={confirmDeleted} closeAndGoBack={cancelClicked} type="deleteConfirm" data={messageData} />}
+      {isOpen && (
+        <MessageDialog
+          isOpen={isOpen}
+          closeAndContinue={confirmDeleted}
+          closeAndGoBack={cancelClicked}
+          type="deleteConfirm"
+          data={messageData}
+        />
+      )}
       <div className="w-full transition-all ease-in-out duration-1000 transform translate-x-14 slider">
-        {data.map((element, index) => {
-          return (
-            <div
-              key={index}
-              className="grid grid-flow-col grid-cols-12 text-center group"
-            >
-              <div className="p-2 col-span-1 group-hover:bg-slate-300/75">
-                {index + 1}
-              </div>
-              <div className="p-2 col-span-3 group-hover:bg-slate-300/75">
-                {element.front}
-              </div>
-              <div className="p-2 col-span-3 group-hover:bg-slate-300/75">
-                {element.back}
-              </div>
-              <div className="p-2 col-span-2 group-hover:bg-slate-300/75">
-                {element.folder}
-              </div>
-              <div className="p-2 col-span-1 group-hover:bg-slate-300/75">
-                {element.visited}
-              </div>
-              <div className="p-2 col-span-1 group-hover:bg-slate-300/75">
-                {element.lastVisited &&
-                  `${timeSince(new Date(element.lastVisited))} ago`}{" "}
-              </div>
-              <div className="p-2 text-center col-span-1 hidden opacity-0 buttons">
-                <div className="h-full flex justify-items-center gap-4">
-                  <div>
-                    <RiEditLine
-                      onClick={() => onEditClick({data: element})}
-                      className="hover:animate-pulse hover:shadow-2xl text-cyan-800 cursor-pointer text-2xl"
-                    />
-                  </div>
-                  <div onClick={() => onDeleteClick({id: element._id.toString(), data: element.front})}>
-                    <MdRemoveCircle className="hover:animate-pulse hover:shadow-2xl text-cyan-800 cursor-pointer text-2xl" />
+        {data &&
+          data.map((element, index) => {
+            return (
+              <div
+                key={index}
+                className="grid grid-flow-col grid-cols-12 text-center group"
+              >
+                <div className="p-2 col-span-1 group-hover:bg-slate-300/75">
+                  {index + 1}
+                </div>
+                <div className="p-2 col-span-3 group-hover:bg-slate-300/75">
+                  {element.front}
+                </div>
+                <div className="p-2 col-span-3 group-hover:bg-slate-300/75">
+                  {element.back}
+                </div>
+                <div className="p-2 col-span-2 group-hover:bg-slate-300/75">
+                  {element.folder}
+                </div>
+                <div className="p-2 col-span-1 group-hover:bg-slate-300/75">
+                  {element.visited}
+                </div>
+                <div className="p-2 col-span-1 group-hover:bg-slate-300/75">
+                  {element.lastVisited &&
+                    `${timeSince(new Date(element.lastVisited))} ago`}{" "}
+                </div>
+                <div className="p-2 text-center col-span-1 hidden opacity-0 buttons">
+                  <div className="h-full flex justify-items-center gap-4">
+                    <div>
+                      <RiEditLine
+                        onClick={() => onEditClick({ data: element })}
+                        className="hover:animate-pulse hover:shadow-2xl hover:p-0.5 text-cyan-800 cursor-pointer text-2xl"
+                      />
+                    </div>
+                    <div
+                      onClick={() =>
+                        onDeleteClick({
+                          id: element.uuid.toString(),
+                          data: element.front,
+                        })
+                      }
+                    >
+                      <MdRemoveCircle className="hover:animate-pulse hover:shadow-2xl hover:p-0.5 text-cyan-800 cursor-pointer text-2xl" />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
-      {isEditDialogOpen && <EditCardPanel visible={isEditDialogOpen} closeEdit={closeEdit} saveAndCloseEdit={saveAndCloseEdit} data={messageData} />}
+      {isEditDialogOpen && (
+        <EditCardPanel
+          visible={isEditDialogOpen}
+          closeEdit={closeEdit}
+          saveAndCloseEdit={saveAndCloseEdit}
+          data={messageData}
+        />
+      )}
     </div>
   );
 });

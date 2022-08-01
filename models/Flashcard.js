@@ -1,5 +1,6 @@
 class Flashcard {
     constructor(props) {
+        this._uuid = props._uuid
         this._id = props._id
         this._front = props.front
         this._back = props.back
@@ -7,6 +8,10 @@ class Flashcard {
         this._createdOn = props.createdOn
         this._lastVisited = props.lastVisited
         this._tags = props.tags
+    }
+
+    get uuid() {
+        return this._uuid
     }
 
     get id() {

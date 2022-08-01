@@ -3,13 +3,12 @@ import { ObjectId } from 'mongodb'
 
 async function handler(req, res) {
   let db = await connectToDatabase();
-  const { id } = req.query
-  const query = { _id: new ObjectId(id)}
+  const { uuid } = req.query
   await db
     .collection("flash_card_data")
-    .deleteOne(query, function(err, obj) {
+    .deleteOne({uuid: uuid}, function(err, obj) {
       if (err) throw err;
-      console.log(id + " is deleted");
+      console.log(uuid + " is deleted");
   })
 
   return res.status(200).json({});

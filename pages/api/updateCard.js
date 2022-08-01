@@ -1,5 +1,4 @@
 import connectToDatabase from "../../middleware/connectToDatabase";
-import { ObjectId } from "mongodb";
 import formidable from "formidable";
 
 export const config = {
@@ -14,11 +13,11 @@ async function handler(req, res) {
 
   const form = new formidable.IncomingForm();
 
-  const { id } = req.query;
+  const { uuid } = req.query;
 
   form.parse(req, (err, fields, files) => {
     console.log(err, fields, files);
-    const query = { _id: new ObjectId(id) };
+    const query = { uuid };
     db
     .collection("flash_card_data")
     .updateOne(query, { $set: fields }).then((doc) => {
