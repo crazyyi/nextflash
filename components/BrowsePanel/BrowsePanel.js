@@ -54,14 +54,18 @@ export const BrowsePanel = memo((props) => {
         idsToDelete.map(async (uuid) => {
           await deleteHandler(uuid);
         })
-      ).then(() => console.log("done"));
+      )
+        .then(() => console.log("done"))
+        .catch((error) => console.log(error.message));
     };
   }, [globalData.cards, idsToDelete]);
 
   const deleteHandler = async (entered) => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_HOST_URL}/api/delete/?uuid=${encodeURIComponent(entered)}`,
+        `${
+          process.env.NEXT_PUBLIC_HOST_URL
+        }/api/delete/?uuid=${encodeURIComponent(entered)}`,
         {
           method: "DELETE",
           body: "",
@@ -81,9 +85,9 @@ export const BrowsePanel = memo((props) => {
     try {
       const { uuid, form } = entered;
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_HOST_URL}/api/updateCard/?uuid=${encodeURIComponent(
-          uuid
-        )}`,
+        `${
+          process.env.NEXT_PUBLIC_HOST_URL
+        }/api/updateCard/?uuid=${encodeURIComponent(uuid)}`,
         {
           method: "PATCH",
           body: form,
@@ -111,7 +115,7 @@ export const BrowsePanel = memo((props) => {
       front: obj.front,
       back: obj.back,
       folder: obj.folder,
-      tags: obj.tags.join(",")
+      tags: obj.tags.join(","),
     });
 
     const formData = new FormData();
@@ -194,7 +198,7 @@ export const BrowsePanel = memo((props) => {
         />
       )}
       <div className="w-full transition-all ease-in-out duration-1000 transform translate-x-14 slider">
-        {data ?
+        {data ? (
           data.map((element, index) => {
             return (
               <div
@@ -242,7 +246,10 @@ export const BrowsePanel = memo((props) => {
                 </div>
               </div>
             );
-          }) : <Spinner />}
+          })
+        ) : (
+          <Spinner />
+        )}
       </div>
       {isEditDialogOpen && (
         <EditCardPanel
@@ -256,4 +263,4 @@ export const BrowsePanel = memo((props) => {
   );
 });
 
-BrowsePanel.displayName = "BrowsePanel"
+BrowsePanel.displayName = "BrowsePanel";
