@@ -1,12 +1,9 @@
 import { useEffect, useState, useCallback, memo } from "react";
 import { RiEditLine } from "react-icons/ri";
 import { MdRemoveCircle } from "react-icons/md";
-import { MessageDialog, Spinner } from "components/Utilities";
-import { EditCardPanel } from "components";
+import { MessageDialog, Spinner, updateHandler } from "components/Utilities";
+import { EditCardPanel, Button } from "components";
 import { useDataContext } from "DataProvider";
-
-const buttonStyle =
-  "bg-indigo-400 hover:bg-violet-600 focus:outline-4 w-36 h-12 text-white px-8 font-bold tracking-widest text-lg m-8";
 
 function timeSince(date) {
   var seconds = Math.floor((new Date() - date) / 1000);
@@ -81,24 +78,6 @@ export const BrowsePanel = memo((props) => {
     }
   };
 
-  const updateHandler = async (entered) => {
-    try {
-      const { uuid, form } = entered;
-      const res = await fetch(
-        `${
-          process.env.NEXT_PUBLIC_HOST_URL
-        }/api/updateCard/?uuid=${encodeURIComponent(uuid)}`,
-        {
-          method: "PATCH",
-          body: form,
-        }
-      );
-      const data = await res.json();
-    } catch (error) {
-      console.error(error.message);
-    }
-  };
-
   const onEditClick = (obj) => {
     setMessageData(obj.data);
     setIsEditDialogOpen(true);
@@ -164,29 +143,20 @@ export const BrowsePanel = memo((props) => {
   return (
     <div className="flex flex-col justify-center items-center">
       <div className="flex justify-evenly">
-        <button className={buttonStyle} onClick={onClick}>
-          Back
-        </button>
-        <button className={buttonStyle} onClick={onClick}>
-          Save
-        </button>
+        <Button text="Back" onClick={onClick} />
+        <Button text="Save" onClick={onClick} />
       </div>
       <div className="font-bold text-3xl">Browse All Flashcards</div>
-      <div className="w-11/12 flex justify-end">
-        <button
-          className="bg-indigo-400 hover:bg-violet-600 focus:outline-4 w-20 h-8 text-white px-4 font-bold rounded-md tracking-widest text-base m-1"
-          onClick={onToggle}
-        >
-          Edit
-        </button>
+      <div className="w-[1280px] flex justify-end">
+        <Button text="Edit" size="sm" isRounded onClick={onToggle} />
       </div>
-      <div className="grid grid-flow-col grid-cols-11 text-center w-11/12 m-4 font-bold bg-orange-800/40">
+      <div className="grid grid-flow-col grid-cols-12 text-center w-[1280px] m-4 font-bold bg-orange-800/40">
         <div className="p-2 col-span-1">Index</div>
         <div className="p-2 col-span-3">Front</div>
         <div className="p-2 col-span-3">Back</div>
         <div className="p-2 col-span-2">Folder</div>
         <div className="p-2 col-span-1">Visited</div>
-        <div className="p-2 col-span-1">Last visited</div>
+        <div className="p-2 col-span-2">Last visited</div>
       </div>
       {isOpen && (
         <MessageDialog
@@ -198,12 +168,12 @@ export const BrowsePanel = memo((props) => {
         />
       )}
       <div className="w-full transition-all ease-in-out duration-1000 transform translate-x-14 slider">
-        {data ? (
+        {data.length > 0 ? (
           data.map((element, index) => {
             return (
               <div
                 key={index}
-                className="grid grid-flow-col grid-cols-12 text-center group"
+                className="grid grid-flow-col grid-cols-13 text-center group"
               >
                 <div className="p-2 col-span-1 group-hover:bg-slate-300/75">
                   {index + 1}
@@ -220,7 +190,7 @@ export const BrowsePanel = memo((props) => {
                 <div className="p-2 col-span-1 group-hover:bg-slate-300/75">
                   {element.visited}
                 </div>
-                <div className="p-2 col-span-1 group-hover:bg-slate-300/75">
+                <div className="p-2 col-span-2 group-hover:bg-slate-300/75">
                   {element.lastVisited &&
                     `${timeSince(new Date(element.lastVisited))} ago`}{" "}
                 </div>

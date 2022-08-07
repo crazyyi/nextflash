@@ -1,8 +1,6 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { memo } from 'react'
-
-const buttonStyle =
-  "bg-indigo-400 hover:bg-violet-600 focus:outline-4 w-32 h-10 text-white px-4 font-bold tracking-widest text-sm m-8";
+import { Button } from "components"
 
 export const MessageDialog = memo((props) => {
   const { isOpen, closeAndContinue, closeAndGoBack, type, data } = props;
@@ -64,8 +62,8 @@ export const MessageDialog = memo((props) => {
                 </Dialog.Description>
 
                 <div className="w-full flex justify-around">
-                  <button className={buttonStyle} onClick={closeAndContinue}>{leftBtnText}</button>
-                  <button className={buttonStyle} onClick={closeAndGoBack}>{rightBtnText}</button>
+                  <Button text={leftBtnText} size="md" onClick={closeAndContinue} />
+                  <Button text={rightBtnText} size="md" onClick={closeAndGoBack} />
                 </div>
               </Dialog.Panel>
             </Transition.Child>

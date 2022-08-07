@@ -1,4 +1,5 @@
 import { MessageDialog } from "components/Utilities";
+import { Button } from "components";
 import { Listbox, Transition } from "@headlessui/react";
 import { GoCheck } from "react-icons/go";
 import { HiSelector } from "react-icons/hi";
@@ -7,12 +8,6 @@ import { useForm, Controller } from "react-hook-form";
 import { folders } from "components/Utilities";
 import { useDataContext } from "DataProvider";
 import { v4 as uuidv4 } from "uuid";
-
-const buttonStyle =
-  "bg-indigo-400 hover:bg-violet-600 focus:outline-4 w-36 h-12 text-white px-8 font-bold tracking-widest text-lg m-8";
-
-const backButtonStyle =
-  "bg-indigo-400 hover:bg-violet-600 focus:outline-4 w-36 h-12 text-white px-8 font-bold tracking-widest text-lg m-8";
 
 export async function addCardHandler(entered) {
   // Call an external API endpoint to get posts.
@@ -34,7 +29,7 @@ export const CreateNewFlash = (props) => {
 
   const { globalData, addNewCard } = useDataContext();
 
-  const { register, control, handleSubmit, reset, getValues } = useForm();
+  const { register, control, handleSubmit, reset } = useForm();
 
   const isCardCreated = useRef(false);
 
@@ -59,6 +54,7 @@ export const CreateNewFlash = (props) => {
     const currentDate = new Date();
     const newCard= Object.assign(entered, {
       uuid: uuidv4(),
+      visited: 0,
       createdOn: currentDate,
       lastVisited: currentDate,
     });
@@ -83,12 +79,8 @@ export const CreateNewFlash = (props) => {
   return (
     <div className="w-full flex flex-col">
       <div className="flex justify-evenly">
-        <button className={buttonStyle} onClick={onClick}>
-          Back
-        </button>
-        <button className={buttonStyle} onClick={handleSubmit(handleAndClose)}>
-          Save
-        </button>
+        <Button text="Back" onClick={onClick} />
+        <Button text="Save" onClick={handleSubmit(handleAndClose)} />
       </div>
       <div className="w-full flex items-center mt-2 flex-col">
         <h1 className="font-bold text-3xl my-3">Create New Flashcards</h1>

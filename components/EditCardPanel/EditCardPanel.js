@@ -4,9 +4,7 @@ import { GoCheck } from "react-icons/go";
 import { useCallback, useState, memo } from "react";
 import ReactTags from "react-tag-autocomplete";
 import { folders  } from "components/Utilities";
-
-const buttonStyle =
-  "bg-indigo-400 hover:bg-violet-600 focus:outline-4 w-32 h-10 text-white px-4 font-bold tracking-widest text-sm m-8";
+import { Button } from "components"
 
 export const EditCardPanel = memo((props) => {
   const { visible, closeEdit, saveAndCloseEdit, data } = props;
@@ -202,12 +200,8 @@ export const EditCardPanel = memo((props) => {
                   </div>
                 </div>
                 <div className="w-full flex justify-around">
-                  <button className={buttonStyle} onClick={closeEdit}>
-                    Cancel
-                  </button>
-                  <button className={buttonStyle} onClick={handleSaveAndClose}>
-                    Finish
-                  </button>
+                  <Button text="Cancel" size="md" onClick={closeEdit} />
+                  <Button text="Finish" size="md" onClick={handleSaveAndClose} />
                 </div>
               </div>
             </Transition.Child>

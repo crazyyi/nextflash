@@ -16,8 +16,13 @@ export const DataProvider = (props) => {
     cards: [],
   });
 
-  const getCards = async () => {
-    const URI = process.env.NEXT_PUBLIC_HOST_URL + "/api/getCards"
+  const getCards = async (defaultConditions, callback) => {
+    let queryString = ""
+    if (defaultConditions) {
+      const { maxVisited } = defaultConditions
+      queryString += `/?maxVisited=${maxVisited}`
+    }
+    const URI = process.env.NEXT_PUBLIC_HOST_URL + "/api/getCards" + queryString
     const res = await fetch(URI, {
       headers: {
         Accept: "application/json, text/plain, */*",
@@ -25,13 +30,18 @@ export const DataProvider = (props) => {
       },
     });
     const json = await res.json();
-    if (json) {
-      setGlobalData({
-        status: "LOADED",
-        cards: json,
-      });
+    console.log(json)
+    if (callback) {
+      callback(json)
     } else {
-      setGlobalData({ status: "ERROR" });
+      if (json) {
+        setGlobalData({
+          status: "LOADED",
+          cards: json,
+        });
+      } else {
+        setGlobalData({ status: "ERROR" });
+      }
     }
   }
 
@@ -46,15 +56,10 @@ export const DataProvider = (props) => {
 
   const deleteCard = (uuid) => {
     setGlobalData((prevState) => {
-      for (let i = 0; i < prevState.cards.length; i++) {
-        if (uuid === prevState.cards[i].uuid) {
-          prevState.cards.splice(i, 1);
-        }
-      }
       return {
         status: "LOADING",
-        cards: prevState.cards,
-      };
+        cards: prevState.cards.filter(card => card.uuid !== uuid),
+      }
     });
   };
 
@@ -79,7 +84,7 @@ export const DataProvider = (props) => {
   }, [props.cards]);
 
   return (
-    <Context.Provider value={{ globalData, addNewCard, deleteCard, editCard }}>
+    <Context.Provider value={{ globalData, getCards, addNewCard, deleteCard, editCard }}>
       {props.children}
     </Context.Provider>
   );
